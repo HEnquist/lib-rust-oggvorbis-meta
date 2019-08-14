@@ -1,0 +1,12 @@
+[package]
+name = "oggvorbis-meta"
+version = "0.1.0"
+authors = ["HEnquist <henrik.enquist@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lewton = "0.9.4"
+byteorder = "1.3.2"
+ogg = "0.7"
