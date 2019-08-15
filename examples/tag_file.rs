@@ -5,15 +5,6 @@ extern crate lewton;
 extern crate byteorder;
 extern crate ogg;
 
-/*
-fn main() {
-	match run() {
-		Ok(_) =>(),
-		Err(err) => println!("Error: {}", err),
-	}
-}
-*/
-
 use std::env;
 use lewton::header::CommentHeader;
 use std::fs::File;
@@ -24,10 +15,10 @@ use oggvorbis_meta::{read_comment_header, replace_comment_header};
 fn main() {
     let file_in = env::args().nth(1).expect("Please specify an input file.");
     let file_out = env::args().nth(2).expect("Please specify an output file.");
-	println!("Opening files: {}, {}", file_in, file_out);
+    println!("Opening files: {}, {}", file_in, file_out);
 
     //open files
-	let mut f_in_disk = File::open(file_in).expect("Can't open file");
+    let mut f_in_disk = File::open(file_in).expect("Can't open file");
     let mut f_in_ram: Vec<u8> = vec![];
 
     println!("Copy input file to buffer");
@@ -47,12 +38,12 @@ fn main() {
     comment_list.push((String::from("artist"), String::from("hejhopp")));
     comment_list.push((String::from("album"), String::from("tummetott")));
     let new_comment = CommentHeader {
-		vendor,
-		comment_list,
+        vendor,
+        comment_list,
     };
 
     println!("Insert new comments");
-	let mut f_out = replace_comment_header(f_in, new_comment);
+    let mut f_out = replace_comment_header(f_in, new_comment);
 
     println!("Save to disk");
     let mut f_out_disk = File::create(file_out).unwrap();
