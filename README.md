@@ -1,4 +1,5 @@
 # Oggvorbismeta
+[![Build Status](https://travis-ci.org/HEnquist/lib-rust-oggvorbis-meta.svg?branch=master)](https://travis-ci.org/HEnquist/lib-rust-oggvorbis-meta)
 
 A simple Rust library to read and write VorbisComments tags in OggVorbis (*.ogg) audio files.
 
