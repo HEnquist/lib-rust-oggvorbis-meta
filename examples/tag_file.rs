@@ -31,20 +31,16 @@ fn main() {
     }
 
     let f_in = Cursor::new(&f_in_ram);
-
+    let mut new_comment = CommentHeader::new();
     println!("Make new comment header");
-    let vendor = "kaboink".to_string();
-    let mut comment_list = Vec::new();
-    comment_list.push((String::from("artist"), String::from("Some Guy")));
-    comment_list.push((String::from("artist"), String::from("Another Dude")));
-    comment_list.push((String::from("album"), String::from("Greatest Hits")));
-    comment_list.push((String::from("tracknumber"), String::from("3")));
-    comment_list.push((String::from("title"), String::from("A very good song")));
-    comment_list.push((String::from("date"), String::from("1997")));
-    let new_comment = CommentHeader {
-        vendor,
-        comment_list,
-    };
+    new_comment.vendor = "Ogg".to_string();
+    new_comment.add_tag_single(&"artist".to_string(), &"Some Guy".to_string());
+    new_comment.add_tag_single(&"artist".to_string(), &"Another Dude".to_string());
+    new_comment.add_tag_single(&"album".to_string(), &"Greatest Hits".to_string());
+    new_comment.add_tag_single(&"tracknumber".to_string(), &"3".to_string());
+    new_comment.add_tag_single(&"title".to_string(), &"A very good song".to_string());
+    new_comment.add_tag_single(&"date".to_string(), &"1997".to_string());
+
 
     println!("Insert new comments");
     let mut f_out = replace_comment_header(f_in, new_comment);
