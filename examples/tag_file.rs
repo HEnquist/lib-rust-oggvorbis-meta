@@ -1,15 +1,11 @@
 // Read and write vorbiscomment metadata
 
-extern crate oggvorbis_meta;
-extern crate lewton;
-extern crate byteorder;
-extern crate ogg;
+extern crate oggvorbismeta;
 
 use std::env;
-use lewton::header::CommentHeader;
 use std::fs::File;
 use std::io::{Cursor, Seek};
-use oggvorbis_meta::{read_comment_header, replace_comment_header};
+use oggvorbismeta::{read_comment_header, replace_comment_header, VorbisComments, CommentHeader};
 
 
 fn main() {
@@ -25,18 +21,26 @@ fn main() {
     std::io::copy(&mut f_in_disk, &mut f_in_ram).unwrap();
     
     let f_in = Cursor::new(&f_in_ram);
-    //let mut f_out = Cursor::new(f_out_ram);
     println!("Read comments from file");
     let read_comments = read_comment_header(f_in);
-    println!("Existing comments: {:?}", read_comments);
     
+    let tag_names = read_comments.get_tag_names();
+    println!("Existing tags: {:?}", tag_names);
+    for tag in tag_names.iter() {
+        println!("Existing tag: {:?}, {:?}", tag, read_comments.get_tag_multi(tag));
+    }
+
     let f_in = Cursor::new(&f_in_ram);
 
     println!("Make new comment header");
     let vendor = "kaboink".to_string();
-    let mut comment_list = Vec::with_capacity(2);
-    comment_list.push((String::from("artist"), String::from("hejhopp")));
-    comment_list.push((String::from("album"), String::from("tummetott")));
+    let mut comment_list = Vec::new();
+    comment_list.push((String::from("artist"), String::from("Some Guy")));
+    comment_list.push((String::from("artist"), String::from("Another Dude")));
+    comment_list.push((String::from("album"), String::from("Greatest Hits")));
+    comment_list.push((String::from("tracknumber"), String::from("3")));
+    comment_list.push((String::from("title"), String::from("A very good song")));
+    comment_list.push((String::from("date"), String::from("1997")));
     let new_comment = CommentHeader {
         vendor,
         comment_list,

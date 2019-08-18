@@ -1,5 +1,5 @@
 [package]
-name = "oggvorbis-meta"
+name = "oggvorbismeta"
 version = "0.1.0"
 authors = ["HEnquist <henrik.enquist@gmail.com>"]
 edition = "2018"
