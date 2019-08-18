@@ -4,11 +4,86 @@ extern crate lewton;
 extern crate byteorder;
 extern crate ogg;
 
-use lewton::header::CommentHeader;
+//use lewton::header::CommentHeader;
 use ogg::{PacketReader, PacketWriter, Packet};
 use ogg::writing::PacketWriteEndInfo;
 use std::io::{Cursor, Read, Seek};
 use std::convert::TryInto;
+
+pub type CommentHeader = lewton::header::CommentHeader;
+
+//type VorbisComments = CommentHeader;
+pub trait VorbisComments {
+    fn from_vecs(vendor: String, comment_list: Vec<(String, String)>) -> CommentHeader;
+
+    fn new() -> CommentHeader;
+
+    fn get_tag_names(&self) -> Vec<String> ;
+
+    fn get_tag_single(&self, tag: &String) -> String;
+
+    fn get_tag_multi(&self, tag: &String) -> Vec<String>;
+
+    fn clear_tag(&mut self, tag: &String);
+
+    fn add_tag_single(&mut self, tag: &String, value: &String);
+
+    fn add_tag_multi(&mut self, tag: &String, values: &Vec<String>);
+}
+
+
+impl VorbisComments for CommentHeader {
+    
+    fn from_vecs(vendor: String, comment_list: Vec<(String,String)>) -> CommentHeader {
+        CommentHeader {
+            vendor,
+            comment_list,
+        }
+    }
+
+    fn new() -> CommentHeader {
+        CommentHeader {
+            vendor : "".to_string(),
+            comment_list : Vec::new(),
+        }
+    }
+
+    fn get_tag_names(&self) -> Vec<String> {
+        let mut names = self.comment_list.iter().map(|comment| comment.0.to_lowercase()).collect::<Vec<String>>();
+        names.sort_unstable();
+        names.dedup();
+        names
+    }
+
+    fn get_tag_single(&self, tag: &String) -> String {
+        self.get_tag_multi(tag)[0].to_string()
+    }
+
+    fn get_tag_multi(&self, tag: &String) -> Vec<String> {
+        self.comment_list
+            .clone()
+            .iter()
+            .filter(|comment| comment.0.to_lowercase() == tag.to_lowercase())
+            .map(|comment| comment.1.clone())
+            .collect::<Vec<String>>()
+    }
+
+    fn clear_tag(&mut self, tag: &String) {
+        self.comment_list.retain(|comment| comment.0.to_lowercase() != tag.to_lowercase());
+    }
+
+    fn add_tag_single(&mut self, tag: &String, value: &String) {
+        self.comment_list.push((tag.to_lowercase(), value.to_string()));
+    }
+
+    fn add_tag_multi(&mut self, tag: &String, values: &Vec<String>) {
+        for value in values.iter() {
+            self.comment_list.push((tag.to_lowercase(), value.to_string()));
+        }
+    }
+}
+
+
 
 pub fn make_comment_header(header: &CommentHeader) -> Vec<u8> {
     //Signature
