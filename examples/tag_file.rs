@@ -4,7 +4,7 @@ extern crate oggvorbismeta;
 
 use std::env;
 use std::fs::File;
-use std::io::{Cursor, Seek};
+use std::io::Cursor;
 use oggvorbismeta::{read_comment_header, replace_comment_header, VorbisComments, CommentHeader};
 
 
@@ -52,6 +52,5 @@ fn main() {
 
     println!("Save to disk");
     let mut f_out_disk = File::create(file_out).unwrap();
-    f_out.seek(std::io::SeekFrom::Start(0)).unwrap();
     std::io::copy(&mut f_out, &mut f_out_disk).unwrap();
 }

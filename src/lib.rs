@@ -210,6 +210,7 @@ pub fn replace_comment_header<T: Read + Seek>(f_in: T, new_header: CommentHeader
             },
 		}
 	}
+    f_out.seek(std::io::SeekFrom::Start(0)).unwrap();
     f_out
 }
 

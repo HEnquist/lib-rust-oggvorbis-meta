@@ -2,7 +2,6 @@ use oggvorbismeta;
 use oggvorbismeta::{read_comment_header, replace_comment_header, VorbisComments, CommentHeader, make_comment_header};
 use lewton;
 use std::fs::File;
-use std::io::Seek;
 
 fn make_header() -> CommentHeader{
     let mut new_comment = CommentHeader::new();
@@ -42,6 +41,14 @@ fn test_artist() {
 }
 
 #[test]
+fn test_clear() {
+    let mut header = make_header();
+    assert_eq!(header.get_tag_multi("artist").len(), 2);
+    header.clear_tag("artist");
+    assert_eq!(header.get_tag_multi("artist").len(), 0);
+}
+
+#[test]
 fn test_pack_unpack() {
     let header = make_header();
     let binary_header = make_comment_header(&header);
@@ -63,8 +70,7 @@ fn test_update_file() {
 
     let f_in = File::open("tests/noise.ogg").expect("Can't open file");
     let new_header = make_header();
-    let mut f_out = replace_comment_header(f_in, new_header);
-    f_out.seek(std::io::SeekFrom::Start(0)).unwrap();
+    let f_out = replace_comment_header(f_in, new_header);
     let unpacked = read_comment_header(f_out);
     assert_eq!(unpacked.get_tag_names().len(), 5);
     assert_eq!(unpacked.get_vendor(), "Ogg".to_string());
