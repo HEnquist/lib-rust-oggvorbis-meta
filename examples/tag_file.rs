@@ -27,20 +27,25 @@ fn main() {
     let tag_names = read_comments.get_tag_names();
     println!("Existing tags: {:?}", tag_names);
     for tag in tag_names.iter() {
-        println!("Existing tag: {:?}, {:?}", tag, read_comments.get_tag_multi(tag));
+        println!("Existing tag: {}, {:?}", tag, read_comments.get_tag_multi(tag));
     }
 
     let f_in = Cursor::new(&f_in_ram);
     let mut new_comment = CommentHeader::new();
     println!("Make new comment header");
-    new_comment.vendor = "Ogg".to_string();
-    new_comment.add_tag_single(&"artist".to_string(), &"Some Guy".to_string());
-    new_comment.add_tag_single(&"artist".to_string(), &"Another Dude".to_string());
-    new_comment.add_tag_single(&"album".to_string(), &"Greatest Hits".to_string());
-    new_comment.add_tag_single(&"tracknumber".to_string(), &"3".to_string());
-    new_comment.add_tag_single(&"title".to_string(), &"A very good song".to_string());
-    new_comment.add_tag_single(&"date".to_string(), &"1997".to_string());
+    new_comment.set_vendor("Ogg");
+    new_comment.add_tag_single("artist", "Some Guy");
+    new_comment.add_tag_single("artist", "Another Dude");
+    new_comment.add_tag_single("album", "Greatest Hits");
+    new_comment.add_tag_single("tracknumber", "3");
+    new_comment.add_tag_single("title", "A very good song");
+    new_comment.add_tag_single("date", "1997");
 
+    let tag_names = new_comment.get_tag_names();
+    println!("New tags: {:?}", tag_names);
+    for tag in tag_names.iter() {
+        println!("New tag: {}, {:?}", tag, new_comment.get_tag_multi(tag));
+    }
 
     println!("Insert new comments");
     let mut f_out = replace_comment_header(f_in, new_comment);

@@ -14,27 +14,31 @@ pub type CommentHeader = lewton::header::CommentHeader;
 
 //type VorbisComments = CommentHeader;
 pub trait VorbisComments {
-    fn from_vecs(vendor: String, comment_list: Vec<(String, String)>) -> CommentHeader;
+    fn from(vendor: String, comment_list: Vec<(String, String)>) -> CommentHeader;
 
     fn new() -> CommentHeader;
 
     fn get_tag_names(&self) -> Vec<String> ;
 
-    fn get_tag_single(&self, tag: &String) -> String;
+    fn get_tag_single(&self, tag: &str) -> String;
 
-    fn get_tag_multi(&self, tag: &String) -> Vec<String>;
+    fn get_tag_multi(&self, tag: &str) -> Vec<String>;
 
-    fn clear_tag(&mut self, tag: &String);
+    fn clear_tag(&mut self, tag: &str);
 
-    fn add_tag_single(&mut self, tag: &String, value: &String);
+    fn add_tag_single(&mut self, tag: &str, value: &str);
 
-    fn add_tag_multi(&mut self, tag: &String, values: &Vec<String>);
+    fn add_tag_multi(&mut self, tag: &str, values: &Vec<&str>);
+
+    fn get_vendor(&self) -> String;
+
+    fn set_vendor(&mut self, vend: &str);
 }
 
 
 impl VorbisComments for CommentHeader {
     
-    fn from_vecs(vendor: String, comment_list: Vec<(String,String)>) -> CommentHeader {
+    fn from(vendor: String, comment_list: Vec<(String,String)>) -> CommentHeader {
         CommentHeader {
             vendor,
             comment_list,
@@ -55,32 +59,41 @@ impl VorbisComments for CommentHeader {
         names
     }
 
-    fn get_tag_single(&self, tag: &String) -> String {
+    fn get_tag_single(&self, tag: &str) -> String {
         self.get_tag_multi(tag)[0].to_string()
     }
 
-    fn get_tag_multi(&self, tag: &String) -> Vec<String> {
+    fn get_tag_multi(&self, tag: &str) -> Vec<String> {
         self.comment_list
             .clone()
             .iter()
-            .filter(|comment| comment.0.to_lowercase() == tag.to_lowercase())
+            .filter(|comment| comment.0.to_lowercase() == tag.to_string().to_lowercase())
             .map(|comment| comment.1.clone())
             .collect::<Vec<String>>()
     }
 
-    fn clear_tag(&mut self, tag: &String) {
-        self.comment_list.retain(|comment| comment.0.to_lowercase() != tag.to_lowercase());
+    fn clear_tag(&mut self, tag: &str) {
+        self.comment_list.retain(|comment| comment.0.to_lowercase() != tag.to_string().to_lowercase());
     }
 
-    fn add_tag_single(&mut self, tag: &String, value: &String) {
-        self.comment_list.push((tag.to_lowercase(), value.to_string()));
+    fn add_tag_single(&mut self, tag: &str, value: &str) {
+        self.comment_list.push((tag.to_string().to_lowercase(), value.to_string()));
     }
 
-    fn add_tag_multi(&mut self, tag: &String, values: &Vec<String>) {
+    fn add_tag_multi(&mut self, tag: &str, values: &Vec<&str>) {
         for value in values.iter() {
-            self.comment_list.push((tag.to_lowercase(), value.to_string()));
+            self.comment_list.push((tag.to_string().to_lowercase(), value.to_string()));
         }
     }
+
+    fn get_vendor(&self) -> String {
+        self.vendor.to_string()
+    }
+
+    fn set_vendor(&mut self, vend: &str) {
+        self.vendor = vend.to_string();
+    }
+
 }
 
 
