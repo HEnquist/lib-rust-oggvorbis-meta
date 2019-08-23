@@ -15,23 +15,14 @@ pub type CommentHeader = lewton::header::CommentHeader;
 //type VorbisComments = CommentHeader;
 pub trait VorbisComments {
     fn from(vendor: String, comment_list: Vec<(String, String)>) -> CommentHeader;
-
     fn new() -> CommentHeader;
-
     fn get_tag_names(&self) -> Vec<String> ;
-
-    fn get_tag_single(&self, tag: &str) -> String;
-
+    fn get_tag_single(&self, tag: &str) -> Option<String>;
     fn get_tag_multi(&self, tag: &str) -> Vec<String>;
-
     fn clear_tag(&mut self, tag: &str);
-
     fn add_tag_single(&mut self, tag: &str, value: &str);
-
     fn add_tag_multi(&mut self, tag: &str, values: &Vec<&str>);
-
     fn get_vendor(&self) -> String;
-
     fn set_vendor(&mut self, vend: &str);
 }
 
@@ -59,8 +50,15 @@ impl VorbisComments for CommentHeader {
         names
     }
 
-    fn get_tag_single(&self, tag: &str) -> String {
-        self.get_tag_multi(tag)[0].to_string()
+    fn get_tag_single(&self, tag: &str) -> Option<String> {
+        let tags = self.get_tag_multi(tag);
+        let result = if tags.len()>0 {
+            Some(tags[0].to_string())
+        }
+        else {
+            None
+        };
+        result
     }
 
     fn get_tag_multi(&self, tag: &str) -> Vec<String> {

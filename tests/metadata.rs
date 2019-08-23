@@ -41,6 +41,27 @@ fn test_artist() {
 }
 
 #[test]
+fn test_add_multi() {
+    let mut header = make_header();
+    header.add_tag_multi("letters", &vec!["a","b","c"]);
+    assert_eq!(header.get_tag_multi("letters").len(), 3);
+    assert_eq!(header.get_tag_multi("letters")[2], "c".to_string());
+}
+
+#[test]
+fn test_get_tag_single() {
+    let header = make_header();
+    assert_eq!(header.get_tag_single("artist").unwrap(), "Some Guy".to_string());
+}
+
+#[test]
+#[should_panic]
+fn test_get_tag_single_fail() {
+    let header = make_header();
+    let _sometag = header.get_tag_single("sometag").unwrap();
+}
+
+#[test]
 fn test_clear() {
     let mut header = make_header();
     assert_eq!(header.get_tag_multi("artist").len(), 2);
@@ -61,7 +82,7 @@ fn test_pack_unpack() {
 fn test_read_from_file() {
     let f_in = File::open("tests/noise.ogg").expect("Can't open file");
     let read_comments = read_comment_header(f_in);
-    assert_eq!(read_comments.get_tag_single("title"), "Noise".to_string());
+    assert_eq!(read_comments.get_tag_single("title").unwrap(), "Noise".to_string());
 }
 
 
