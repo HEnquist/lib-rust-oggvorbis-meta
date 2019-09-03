@@ -9,10 +9,11 @@ keywords = ["ogg", "vorbis", "metadata"]
 categories = ["multimedia::audio"]
 readme = "README.md"
 edition = "2018"
-travis-ci = { repository = "https://github.com/HEnquist/lib-rust-oggvorbis-meta", branch = "master" }
-maintenance = { status = "actively-developed" }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[badges]
+travis-ci = { repository = "HEnquist/lib-rust-oggvorbis-meta" }
 
 [dependencies]
 lewton = "0.9.4"
