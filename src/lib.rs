@@ -15,10 +15,10 @@ pub trait VorbisComments {
     fn get_tag_single(&self, tag: &str) -> Option<String>;
     fn get_tag_multi(&self, tag: &str) -> Vec<String>;
     fn clear_tag(&mut self, tag: &str);
-    fn add_tag_single(&mut self, tag: &str, value: &str);
-    fn add_tag_multi(&mut self, tag: &str, values: &[&str]);
+    fn add_tag_single(&mut self, tag: impl Into<String>, value: impl Into<String>);
+    fn add_tag_multi(&mut self, tag: String, values: &[String]);
     fn get_vendor(&self) -> String;
-    fn set_vendor(&mut self, vend: &str);
+    fn set_vendor(&mut self, vend: impl Into<String>);
 }
 
 impl VorbisComments for CommentHeader {
@@ -52,7 +52,7 @@ impl VorbisComments for CommentHeader {
         if tags.is_empty() {
             None
         } else {
-            Some(tags[0].to_string())
+            Some(tags[0].clone())
         }
     }
 
@@ -60,25 +60,25 @@ impl VorbisComments for CommentHeader {
         self.comment_list
             .clone()
             .iter()
-            .filter(|comment| comment.0.to_lowercase() == tag.to_string().to_lowercase())
+            .filter(|comment| comment.0.to_lowercase() == tag.to_lowercase())
             .map(|comment| comment.1.clone())
             .collect::<Vec<String>>()
     }
 
     fn clear_tag(&mut self, tag: &str) {
         self.comment_list
-            .retain(|comment| comment.0.to_lowercase() != tag.to_string().to_lowercase());
+            .retain(|comment| comment.0.to_lowercase() != tag.to_lowercase());
     }
 
-    fn add_tag_single(&mut self, tag: &str, value: &str) {
+    fn add_tag_single(&mut self, tag: impl Into<String>, value: impl Into<String>) {
         self.comment_list
-            .push((tag.to_string().to_lowercase(), value.to_string()));
+            .push((tag.into().to_lowercase(), value.into()));
     }
 
-    fn add_tag_multi(&mut self, tag: &str, values: &[&str]) {
+    fn add_tag_multi(&mut self, tag: String, values: &[String]) {
         for value in values {
             self.comment_list
-                .push((tag.to_string().to_lowercase(), (*value).to_string()));
+                .push((tag.clone().to_lowercase(), value.clone()));
         }
     }
 
@@ -86,8 +86,8 @@ impl VorbisComments for CommentHeader {
         self.vendor.to_string()
     }
 
-    fn set_vendor(&mut self, vend: &str) {
-        self.vendor = vend.to_string();
+    fn set_vendor(&mut self, vend: impl Into<String>) {
+        self.vendor = vend.into();
     }
 }
 
