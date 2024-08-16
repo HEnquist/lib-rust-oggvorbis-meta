@@ -1,10 +1,12 @@
 // Read and write vorbiscomment metadata
-use oggvorbismeta::{read_comment_header, replace_comment_header, CommentHeader, VorbisComments};
+use oggvorbismeta::{
+    read_comment_header, replace_comment_header, CommentHeader, Result, VorbisComments,
+};
 use std::env;
 use std::fs::File;
 use std::io::Cursor;
 
-fn main() {
+fn main() -> Result<()> {
     let file_in = env::args().nth(1).expect("Please specify an input file.");
     let file_out = env::args().nth(2).expect("Please specify an output file.");
     println!("Opening files: {file_in}, {file_out}");
@@ -18,7 +20,7 @@ fn main() {
 
     let f_in = Cursor::new(&f_in_ram);
     println!("Read comments from file");
-    let read_comments = read_comment_header(f_in);
+    let read_comments = read_comment_header(f_in)?;
 
     let tag_names = read_comments.get_tag_names();
     println!("Existing tags: {tag_names:?}");
@@ -48,9 +50,10 @@ fn main() {
     }
 
     println!("Insert new comments");
-    let mut f_out = replace_comment_header(f_in, &new_comment);
+    let mut f_out = replace_comment_header(f_in, &new_comment)?;
 
     println!("Save to disk");
     let mut f_out_disk = File::create(file_out).unwrap();
     std::io::copy(&mut f_out, &mut f_out_disk).unwrap();
+    Ok(())
 }
