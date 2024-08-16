@@ -8,7 +8,7 @@ repository = "https://github.com/HEnquist/lib-rust-oggvorbis-meta"
 keywords = ["ogg", "vorbis", "metadata"]
 categories = ["multimedia::audio"]
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -19,3 +19,11 @@ travis-ci = { repository = "HEnquist/lib-rust-oggvorbis-meta" }
 lewton = "0.9.4"
 byteorder = "1.3.2"
 ogg = "0.7"
+
+[lints.clippy.pedantic]
+level = "warn"
+priority = -1
+
+[lints.clippy]
+# emporary until i start using Result
+missing_panics_doc = "allow"
