@@ -23,9 +23,3 @@ thiserror = "1.0.63"
 
 [lints.clippy.pedantic]
 level = "warn"
-priority = -1
-
-[lints.clippy]
-# emporary until i start using Result
-missing_panics_doc = "allow"
-missing_errors_doc = "allow"
