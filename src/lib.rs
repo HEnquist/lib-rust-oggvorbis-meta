@@ -8,7 +8,6 @@ use thiserror::Error;
 
 pub use lewton::header::CommentHeader;
 
-//type VorbisComments = CommentHeader;
 pub trait VorbisComments {
     fn from(vendor: String, comment_list: Vec<(String, String)>) -> CommentHeader;
     fn new() -> Self;
@@ -132,13 +131,11 @@ pub fn make_comment_header(header: &CommentHeader) -> Result<Vec<u8>> {
     //write each comment
     for comment in &header.comment_list {
         let val = format!("{}={}", comment.0, comment.1);
-        //let commenstrings.last().as_bytes();
         let comment_len: u32 = val.as_bytes().len().try_into()?;
         new_packet.extend(comment_len.to_le_bytes().iter());
         new_packet.extend(val.as_bytes().iter());
     }
     new_packet.push(end);
-    //println!("{:?}",new_packet);
     Ok(new_packet)
 }
 
@@ -178,13 +175,9 @@ pub fn replace_comment_header<T: Read + Seek>(
         };
         if !header_done {
             let comment_hdr = lewton::header::read_header_comment(&packet.data);
-            match comment_hdr {
-                Ok(_hdr) => {
-                    // This is the packet to replace
-                    packet.data.clone_from(&new_comment_data);
-                    header_done = true;
-                }
-                Err(_error) => {}
+            if comment_hdr.is_ok() {
+                packet.data.clone_from(&new_comment_data);
+                header_done = true;
             }
         }
         let lastpacket = packet.last_in_stream() && packet.last_in_page();
