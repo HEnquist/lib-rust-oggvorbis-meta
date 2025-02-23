@@ -1,9 +1,9 @@
 [package]
 name = "oggvorbismeta"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["HEnquist <henrik.enquist@gmail.com>"]
 description = "Read and write metadata from ogg vorbis audio files"
-license = "GPL-3.0-or-later"
+license = "MIT"
 repository = "https://github.com/HEnquist/lib-rust-oggvorbis-meta"
 keywords = ["ogg", "vorbis", "metadata"]
 categories = ["multimedia::audio"]
@@ -11,9 +11,6 @@ readme = "README.md"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[badges]
-travis-ci = { repository = "HEnquist/lib-rust-oggvorbis-meta" }
 
 [dependencies]
 lewton = "0.9.4"
