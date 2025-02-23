@@ -16,7 +16,7 @@ pub trait VorbisComments {
     fn get_tag_multi(&self, tag: &str) -> Vec<String>;
     fn clear_tag(&mut self, tag: &str);
     fn add_tag_single(&mut self, tag: impl Into<String>, value: impl Into<String>);
-    fn add_tag_multi(&mut self, tag: String, values: &[String]);
+    fn add_tag_multi(&mut self, tag: impl Into<String>, values: &[String]);
     fn get_vendor(&self) -> String;
     fn set_vendor(&mut self, vend: impl Into<String>);
 }
@@ -75,10 +75,11 @@ impl VorbisComments for CommentHeader {
             .push((tag.into().to_lowercase(), value.into()));
     }
 
-    fn add_tag_multi(&mut self, tag: String, values: &[String]) {
+    fn add_tag_multi(&mut self, tag: impl Into<String>, values: &[String]) {
+        let tag_string = tag.into();
         for value in values {
             self.comment_list
-                .push((tag.clone().to_lowercase(), value.clone()));
+                .push((tag_string.clone().to_lowercase(), value.clone()));
         }
     }
 
@@ -104,6 +105,14 @@ pub enum Error {
 }
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Create a new comment header packet.
+/// # Arguments
+/// * `header` - The comment header to write.
+/// # Returns
+/// * A `Vec<u8>` containing the comment header packet.
+/// # Errors
+/// * If any of the strings are too long to be converted to `u32`.
+/// * If the comment header contains invalid characters.
 pub fn make_comment_header(header: &CommentHeader) -> Result<Vec<u8>> {
     //Signature
     let start = [3u8, 118, 111, 114, 98, 105, 115];
@@ -139,6 +148,14 @@ pub fn make_comment_header(header: &CommentHeader) -> Result<Vec<u8>> {
     Ok(new_packet)
 }
 
+/// Read a comment header from an ogg file.
+/// # Arguments
+/// * `f_in` - A `Read + Seek` object
+/// # Returns
+/// * A `CommentHeader` object
+/// # Errors
+/// * If the file is not a valid ogg file.
+/// * If the file does not contain a comment header.
 pub fn read_comment_header<T: Read + Seek>(f_in: T) -> Result<CommentHeader> {
     let mut reader = PacketReader::new(f_in);
 
@@ -152,6 +169,18 @@ pub fn read_comment_header<T: Read + Seek>(f_in: T) -> Result<CommentHeader> {
     Ok(lewton::header::read_header_comment(&packet.data)?)
 }
 
+/// Replace the comment header in an ogg file.
+/// # Arguments
+/// * `f_in` - A `Read + Seek` object.
+/// * `new_header` - The new comment header.
+/// # Returns
+/// * A `Cursor<Vec<u8>>` containing the new ogg file.
+/// # Errors
+/// * If the file is not a valid ogg file.
+/// * If the file does not contain a comment header.
+/// * If the comment header contains invalid characters.
+/// * If any of the strings are too long to be converted to `u32`.
+/// * If there is an error writing the new file.
 pub fn replace_comment_header<T: Read + Seek>(
     f_in: T,
     new_header: &CommentHeader,
